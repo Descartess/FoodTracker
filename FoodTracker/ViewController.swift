@@ -13,6 +13,7 @@ class ViewController: UIViewController, UITextFieldDelegate,
     //MARK: Properties
     @IBOutlet weak var nameTextField: UITextField!
     
+    @IBOutlet weak var ratingControl: RatingControl!
     @IBOutlet weak var mealNameLabel: UILabel!
     
     @IBOutlet weak var photoImageView: UIImageView!
@@ -34,9 +35,7 @@ class ViewController: UIViewController, UITextFieldDelegate,
         imagePickerController.delegate = self
         present(imagePickerController, animated: true, completion: nil)
     }
-    @IBAction func setDefaultTextLabel(_ sender: UIButton) {
-        mealNameLabel.text = "Default text"
-    }
+    
     //MARK: UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // hide the keyboard

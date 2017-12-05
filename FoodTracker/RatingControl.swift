@@ -8,25 +8,109 @@
 
 import UIKit
 
-class RatingControl: UIStackView {
+@IBDesignable class RatingControl: UIStackView {
     
     //MARK: Initilization
+    
+    private var ratingButtons = [UIButton]()
+    var rating = 0 {
+        didSet {
+            updateButtonSelectionStates()
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupButtons()
     }
     
     required init(coder: NSCoder) {
         super.init(coder: coder)
+        setupButtons()
+    }
+    //MARK: Properties
+    @IBInspectable var starSize: CGSize = CGSize(width: 44.0, height: 44.0) {
+        didSet {
+            setupButtons()
+        }
+    }
+    @IBInspectable var starCount: Int = 5 {
+        didSet {
+            setupButtons()
+        }
     }
     
     
-    
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+    private func setupButtons() {
+        
+        for button in ratingButtons {
+            removeArrangedSubview(button)
+            button.removeFromSuperview()
+        }
+        
+        ratingButtons.removeAll()
+        
+        // load the button images
+        
+        let bundle = Bundle(for: type(of: self))
+        let emptyStar = UIImage(named: "emptyStar", in: bundle, compatibleWith: self.traitCollection)
+        let filledStar = UIImage(named: "filledStar", in: bundle, compatibleWith: self.traitCollection)
+        let highlightedStar = UIImage(named: "highlightedStar", in: bundle, compatibleWith: self.traitCollection)
+        
+        for index in 0..<starCount {
+            let buttons = UIButton()
+            // set up button images
+            buttons.setImage(emptyStar, for: .normal)
+            buttons.setImage(filledStar, for: .selected)
+            buttons.setImage(highlightedStar, for: .highlighted)
+            buttons.setImage(highlightedStar, for: [.highlighted, .selected])
+            // add constraints
+            buttons.translatesAutoresizingMaskIntoConstraints = false
+            buttons.heightAnchor.constraint(equalToConstant: starSize.height).isActive = true
+            buttons.widthAnchor.constraint(equalToConstant: starSize.width).isActive = true
+            // set accessibility label
+            buttons.accessibilityLabel = "Set \(index+1) star rating"
+            // set up button action
+            buttons.addTarget(self, action: #selector(RatingControl.ratingButtonTapped(button:)), for: .touchUpInside)
+            // add button to the stack
+            addArrangedSubview(buttons)
+            // add new button to ratings array
+            ratingButtons.append(buttons)
+            updateButtonSelectionStates()
+        }
     }
-    */
-
+    @objc func ratingButtonTapped(button: UIButton) {
+        guard let index = ratingButtons.index(of: button) else {
+            fatalError("There is no \(button) in the list \(ratingButtons)")
+        }
+        let selectedRating = index + 1
+        if selectedRating == rating {
+            rating = 0
+        } else {
+            rating = selectedRating
+        }
+    }
+    
+    private func updateButtonSelectionStates() {
+        for (index, button) in ratingButtons.enumerated() {
+            button.isSelected = index < rating
+            let hintString: String?
+            if rating == index + 1 {
+                hintString = "Tap to set a zero rating"
+            } else {
+                hintString = nil
+            }
+            let valueString: String
+            
+            switch(rating) {
+                case 0:
+                    valueString = "No rating set"
+                case 1:
+                    valueString = "1 Star set"
+                default:
+                    valueString = "\(rating) set"
+            }
+            button.accessibilityHint = hintString
+            button.accessibilityValue = valueString
+        }
+    }
 }
