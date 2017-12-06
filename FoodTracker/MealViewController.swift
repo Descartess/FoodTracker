@@ -7,22 +7,39 @@
 //
 
 import UIKit
+import os.log
 
-class ViewController: UIViewController, UITextFieldDelegate,
+class MealViewController: UIViewController, UITextFieldDelegate,
                       UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    var meal: Meal?
+    
     //MARK: Properties
     @IBOutlet weak var nameTextField: UITextField!
     
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var ratingControl: RatingControl!
-    @IBOutlet weak var mealNameLabel: UILabel!
+    
     
     @IBOutlet weak var photoImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 //        Handle the texts fields user input through delegate callbacks
         nameTextField.delegate = self
-        
     }
+    
+    //MARK: Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        guard let button = sender as? UIBarButtonItem, button === saveButton else {
+            os_log("The save button was not pressed cancelling", log: OSLog.default, type: .debug)
+            return
+        }
+        let name = nameTextField.text ?? ""
+        let photo = photoImageView.image
+        let rating = ratingControl.rating
+        meal = Meal(name: name, photo: photo, rating: rating)
+    }
+    
     //MARK: Actions
     @IBAction func selectPhotoFromLibrary(_ sender: UITapGestureRecognizer) {
         nameTextField.resignFirstResponder()
@@ -36,6 +53,13 @@ class ViewController: UIViewController, UITextFieldDelegate,
         present(imagePickerController, animated: true, completion: nil)
     }
     
+//    @IBAction func unwindToMealList(sender: UIStoryboardSegue) {
+//        if let sourceViewController = sender.source as? MealViewController, let meal = sourceViewController.meal {
+////            let newIndexPath = IndexPath(row: meals.count, section: 0)
+////            meals.append(meal)
+//        }
+//    }
+    
     //MARK: UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // hide the keyboard
@@ -44,7 +68,7 @@ class ViewController: UIViewController, UITextFieldDelegate,
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        mealNameLabel.text = nameTextField.text
+//        mealNameLabel.text = nameTextField.text
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
