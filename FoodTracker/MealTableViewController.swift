@@ -8,11 +8,12 @@
 
 import UIKit
 
-public var meals = [Meal]()
+//public var meals = [Meal]()
 
 class MealTableViewController: UITableViewController {
     
     
+    var meals = [Meal]()
     
     private func loadSampleMeals() {
         guard let meal1 = Meal(name: "Caprese Salad", photo: #imageLiteral(resourceName: "meal1"), rating: 4) else {
@@ -43,6 +44,14 @@ class MealTableViewController: UITableViewController {
         return meals.count
     }
     
+    @IBAction func unwindToMealList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.source as? MealViewController, let meal = sourceViewController.meal {
+            let newIndexPath = IndexPath(row: meals.count, section: 0)
+            meals.append(meal)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
+    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MealTableViewCell", for: indexPath) as? MealTableViewCell else { fatalError("The dequeued cell is not an instance of MealTableViewCell")}
         let meal = meals[indexPath.row]
