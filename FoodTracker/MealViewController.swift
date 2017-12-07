@@ -17,6 +17,10 @@ class MealViewController: UIViewController, UITextFieldDelegate,
     @IBOutlet weak var nameTextField: UITextField!
     
     @IBOutlet weak var saveButton: UIBarButtonItem!
+
+    @IBAction func cancelButton(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
     @IBOutlet weak var ratingControl: RatingControl!
     
     
@@ -25,6 +29,7 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         super.viewDidLoad()
 //        Handle the texts fields user input through delegate callbacks
         nameTextField.delegate = self
+        updateSaveButtonState()
     }
     
     //MARK: Navigation
@@ -53,22 +58,22 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         present(imagePickerController, animated: true, completion: nil)
     }
     
-//    @IBAction func unwindToMealList(sender: UIStoryboardSegue) {
-//        if let sourceViewController = sender.source as? MealViewController, let meal = sourceViewController.meal {
-////            let newIndexPath = IndexPath(row: meals.count, section: 0)
-////            meals.append(meal)
-//        }
-//    }
     
     //MARK: UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
         // hide the keyboard
         textField.resignFirstResponder()
         return true
     }
     
+    private func updateSaveButtonState() {
+        let text = nameTextField.text ?? ""
+        saveButton.isEnabled = !text.isEmpty
+    }
     func textFieldDidEndEditing(_ textField: UITextField) {
-//        mealNameLabel.text = nameTextField.text
+            updateSaveButtonState()
+            navigationItem.title = textField.text
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
