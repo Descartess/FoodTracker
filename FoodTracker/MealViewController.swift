@@ -76,6 +76,10 @@ class MealViewController: UIViewController, UITextFieldDelegate,
             navigationItem.title = textField.text
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        saveButton.isEnabled = false
+    }
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
